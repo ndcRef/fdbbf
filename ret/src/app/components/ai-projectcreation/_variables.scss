@@ -1,0 +1,45 @@
+// _variables.scss — Shared design tokens across all wizard components
+
+// ── Purple palette ──────────────────────────────────────
+$purple-900:       #4A148C;
+$purple-700:       #7B1FA2;
+$purple-600:       #6A1B9A;
+$purple-500:       #9C27B0;
+$purple-200:       #CE93D8;
+$purple-100:       #E1BEE7;
+$purple-50:        #F3E5F9;
+
+// ── Green palette ───────────────────────────────────────
+$green-700:        #2E7D32;
+$green-500:        #4CAF50;
+$green-50:         #E8F5E9;
+
+// ── Neon / accent ───────────────────────────────────────
+$cyan:             #22d3ee;
+$neon-cyan:        #06b6d4;
+$neon-purple:      #c084fc;
+$neon-green:       #34d399;
+
+// ── Text ────────────────────────────────────────────────
+$text-dark:        #1E293B;
+$text-secondary:   #475569;
+$text-tertiary:    #64748B;
+$text-muted-lt:    #94A3B8;
+
+// ── Surface / borders ───────────────────────────────────
+$surface-light:    #F5F6FA;
+$border-light:     #E2E8F0;
+$border-subtle:    #F1F5F9;
+
+// ── Semantic ────────────────────────────────────────────
+$red-error:        #E53E3E;
+
+// ── Layout ──────────────────────────────────────────────
+$card-radius:      16px;
+$confirm-max:      480px;
+
+// ── Typography ──────────────────────────────────────────
+$font-mono:        'Cascadia Code', 'Fira Code', Consolas, Monaco, monospace;
+
+// ── Easing ──────────────────────────────────────────────
+$spring:           cubic-bezier(0.34, 1.56, 0.64, 1);

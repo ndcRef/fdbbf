@@ -1,0 +1,101 @@
+<aside class="sidebar" [class.collapsed]="svc.sidebarCollapsed()">
+  <div class="sidebar-header">
+    <div class="sidebar-brand">
+      <span class="mini-engine"></span>
+      @if (!svc.sidebarCollapsed()) {
+        @if (svc.summary().projectName) {
+          <span class="brand-project" [title]="svc.summary().projectName">{{ svc.summary().projectName }}</span>
+        } @else {
+          TC One Click
+        }
+      }
+    </div>
+    @if (!(svc.loading() && svc.loadingMode() === 'full')) {
+      <button class="sidebar-toggle" (click)="toggleSidebar()" aria-label="Toggle sidebar" [title]="svc.sidebarCollapsed() ? 'Expand sidebar' : 'Collapse sidebar'" [attr.aria-label]="svc.sidebarCollapsed() ? 'Expand sidebar' : 'Collapse sidebar'">
+        <span [innerHTML]="icon(svc.sidebarCollapsed() ? 'chevronRight' : 'chevronLeft', 14)"></span>
+      </button>
+    }
+  </div>
+
+  <nav class="step-list">
+    <div class="step-track" [style.--track-progress]="svc.trackProgress()"></div>
+    @for (step of svc.steps(); track step.title; let i = $index) {
+      <div class="step-item"
+           [class.active]="i === 0 && step.state !== 'completed'"
+           [class.done]="step.state === 'completed'">
+        <span class="step-num" [class.check]="step.state === 'completed'">
+          {{ step.state === 'completed' ? '\u2713' : i + 1 }}
+        </span>
+        <span class="step-label">{{ step.title }}</span>
+      </div>
+    }
+  </nav>
+
+  @if (basicInfoRows().length && !svc.sidebarCollapsed() && !(svc.loading() && svc.loadingMode() === 'full')) {
+    <div class="summary-card">
+      <h3 class="summary-heading">Basic Info</h3>
+      @for (row of basicInfoRows(); track row.key) {
+        <div class="sum-row">
+          <span class="sum-key">{{ row.key }}</span>
+          <span class="sum-val">{{ row.val }}</span>
+          @if (row.reset && svc.canReset(row.reset)) {
+            <button class="sum-reset" (click)="svc.resetSelection(row.reset)" [title]="'Change ' + row.key.toLowerCase()">&times;</button>
+          }
+        </div>
+      }
+    </div>
+  }
+
+  @if (detailRows().length && !svc.sidebarCollapsed() && !(svc.loading() && svc.loadingMode() === 'full')) {
+    <div class="summary-card">
+      <h3 class="summary-heading">Project Details</h3>
+      @for (row of detailRows(); track row.key) {
+        <div class="sum-row">
+          <span class="sum-key">{{ row.key }}</span>
+          <span class="sum-val">{{ row.val }}</span>
+        </div>
+      }
+    </div>
+  }
+
+  @if (financialRows().length && !svc.sidebarCollapsed() && !(svc.loading() && svc.loadingMode() === 'full')) {
+    <div class="summary-card">
+      <h3 class="summary-heading">Financials</h3>
+      @for (row of financialRows(); track row.key) {
+        <div class="sum-row">
+          <span class="sum-key">{{ row.key }}</span>
+          <span class="sum-val">{{ row.val }}</span>
+        </div>
+      }
+    </div>
+  }
+
+  @if (svc.kpiList().length > 0 && !svc.sidebarCollapsed() && !(svc.loading() && svc.loadingMode() === 'full')) {
+    <div class="summary-card">
+      <h3 class="summary-heading">KPIs ({{ svc.kpiList().length }})</h3>
+      @for (kpi of svc.kpiList(); track kpi.metricrowid; let idx = $index) {
+        <div class="sum-row">
+          <span class="sum-key">{{ kpi.metricGroupName }}</span>
+          <span class="sum-val">{{ kpi.metricName }}</span>
+        </div>
+        <div class="sum-row sum-row-sub">
+          <span class="sum-key">As-Is / To-Be</span>
+          <span class="sum-val">{{ kpi.AS_IS }} → {{ kpi.TO_BE }}</span>
+        </div>
+        @if (kpi.WOULD_BE) {
+          <div class="sum-row sum-row-sub">
+            <span class="sum-key">Would-Be</span>
+            <span class="sum-val">{{ kpi.WOULD_BE }}</span>
+          </div>
+        }
+      }
+    </div>
+  }
+
+  <div class="sidebar-footer">
+    <div class="powered-badge">
+      <span class="powered-pulse-sm"></span>
+      @if (!svc.sidebarCollapsed()) { Powered by <strong>TP Data Assist</strong> }
+    </div>
+  </div>
+</aside>

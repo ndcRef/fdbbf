@@ -1,0 +1,358 @@
+@use '../variables' as *;
+
+// ── Local Variables ─────────────────────────────────────────
+$sb-bg:            #FAFBFE;
+$sb-bg-end:        #F5F3FA;
+$sidebar-text:     #64748B;
+$text-light:       #334155;
+$border-main:      #E8E0F0;
+
+// ── Host (transparent in parent grid) ────────────────────────
+:host { display: contents; }
+
+// ── Sidebar ──────────────────────────────────────────────────
+.sidebar {
+  order: 2;
+  background: linear-gradient(180deg, #FFFFFF, $sb-bg-end);
+  border-left: 3px solid $purple-700;
+  padding: 18px 14px;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
+  transition: padding 0.35s ease, width 0.35s ease, box-shadow 0.35s ease;
+  position: relative;
+  box-shadow: -6px 0 24px rgba($purple-700, 0.08), inset 1px 0 0 rgba($purple-200, 0.15);
+
+  // Purple gradient accent at top
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -3px; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, $purple-700, $purple-200, $neon-cyan, $purple-200, $purple-700);
+    background-size: 200% auto;
+    animation: sidebarTopShimmer 4s linear infinite;
+    z-index: 1;
+  }
+
+  // Subtle radial glow behind steps
+  &::after {
+    content: '';
+    position: absolute;
+    top: 80px; left: 50%;
+    width: 160px; height: 160px;
+    transform: translateX(-50%);
+    background: radial-gradient(circle, rgba($purple-200, 0.08) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  &.collapsed {
+    padding: 12px 6px;
+    align-items: center;
+    .step-label { display: none; }
+    .step-track { left: 11px; }
+    .step-item { padding: 8px 4px; justify-content: center; }
+    .summary-card { display: none; }
+    .sidebar-footer { padding-top: 8px; }
+    .powered-badge { justify-content: center; }
+    .sidebar-toggle { margin: 0 auto; }
+  }
+}
+
+@keyframes sidebarTopShimmer {
+  0%   { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 26px;
+  justify-content: space-between;
+}
+
+.sidebar-toggle {
+  width: 30px; height: 30px;
+  border-radius: 8px;
+  border: 1.5px solid $purple-200;
+  background: linear-gradient(135deg, $purple-50, #fff);
+  color: $purple-700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.3s $spring;
+  padding: 0;
+  box-shadow: 0 2px 6px rgba($purple-700, 0.1);
+  position: relative;
+  z-index: 2;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, $purple-700, $purple-200);
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  &:hover {
+    background: linear-gradient(135deg, $purple-700, $purple-200);
+    border-color: transparent;
+    color: #fff;
+    transform: scale(1.12);
+    box-shadow: 0 4px 16px rgba($purple-700, 0.3);
+    &::after { opacity: 1; }
+  }
+  &:active { transform: scale(0.92); transition-duration: 0.1s; }
+}
+
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  color: $purple-700;
+  letter-spacing: -0.01em;
+  min-width: 0;
+}
+
+.brand-project {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 160px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: $text-dark;
+  transition: color 0.3s ease;
+  &:hover { color: $purple-700; }
+}
+
+.mini-engine {
+  width: 9px; height: 9px;
+  border-radius: 50%;
+  background: $green-500;
+  box-shadow: 0 0 8px rgba($green-500, 0.4);
+  animation: pulse 2.5s infinite;
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    border: 1px solid rgba($green-500, 0.25);
+    animation: pulseRing 3s ease-out infinite;
+  }
+}
+
+// ── Step List ────────────────────────────────────────────────
+.step-list {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.step-track {
+  position: absolute;
+  left: 17px; top: 24px; bottom: 24px;
+  width: 2px;
+  background: rgba($purple-200, 0.3);
+  border-radius: 1px;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: var(--track-progress, 0%);
+    background: linear-gradient(180deg, $purple-700, $green-500);
+    border-radius: 1px;
+    transition: height 0.6s ease;
+  }
+}
+
+.step-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-size: 13px;
+  color: $sidebar-text;
+  transition: all 0.35s $spring;
+  position: relative;
+  z-index: 1;
+
+  &.active {
+    background: rgba($purple-700, 0.06);
+    color: $purple-700;
+    animation: breatheGlow 3s ease-in-out infinite;
+    .step-num { animation: stepPop 0.5s ease; }
+  }
+  &.done {
+    color: $green-500;
+    .step-num { animation: popScale 0.4s ease both; }
+  }
+}
+
+.step-num {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  background: rgba($purple-200, 0.15);
+  color: $sidebar-text;
+  flex-shrink: 0;
+  transition: all 0.35s $spring;
+
+  .active & { background: rgba($purple-700, 0.12); color: $purple-700; box-shadow: 0 2px 8px rgba($purple-700, 0.15); }
+  .done &   { background: $green-50; color: $green-500; }
+  &.check { font-size: 13px; }
+  .step-item:hover & { transform: scale(1.15); box-shadow: 0 2px 10px rgba($purple-700, 0.18); }
+}
+
+.step-label {
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  transition: transform 0.3s ease, color 0.3s ease, text-shadow 0.3s ease;
+  .active & { transform: translateX(2px); }
+  .step-item:hover & { transform: translateX(4px); color: $purple-700; }
+}
+
+// ── Summary Cards ────────────────────────────────────────────
+.summary-card {
+  background: #fff;
+  border: 1px solid $border-main;
+  border-radius: 12px;
+  padding: 14px;
+  margin-top: 18px;
+  animation: springIn 0.5s ease both;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+
+  &:hover { border-color: $purple-200; box-shadow: 0 4px 16px rgba($purple-700, 0.08); }
+
+  .sum-row {
+    animation: slideIn 0.3s ease both;
+    @for $i from 1 through 8 {
+      &:nth-child(#{$i}) { animation-delay: #{$i * 0.06}s; }
+    }
+  }
+}
+
+.summary-heading {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: $purple-700;
+  margin-bottom: 10px;
+  position: relative;
+  display: inline-block;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -3px; left: 0;
+    width: 100%; height: 1px;
+    background: linear-gradient(90deg, $purple-700, transparent);
+    animation: revealRight 0.6s 0.3s ease both;
+  }
+}
+
+.sum-row {
+  display: flex;
+  align-items: center;
+  padding: 4px 0;
+  font-size: 12px;
+  border-bottom: 1px solid rgba($purple-200, 0.2);
+  gap: 4px;
+  &:last-child { border-bottom: none; }
+
+  &.sum-row-sub {
+    padding-left: 8px;
+    .sum-key { font-size: 10.5px; color: rgba($sidebar-text, 0.7); }
+    .sum-val { font-size: 11px; font-weight: 500; }
+  }
+}
+
+.sum-key { color: $sidebar-text; flex-shrink: 0; min-width: 56px; }
+
+.sum-val {
+  color: $text-dark;
+  font-weight: 600;
+  text-align: right;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sum-reset {
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  border: 1px solid $border-main;
+  background: #fff;
+  color: $sidebar-text;
+  font-size: 12px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.3s $spring;
+  padding: 0;
+
+  &:hover {
+    background: rgba($red-error, 0.08);
+    border-color: rgba($red-error, 0.3);
+    color: $red-error;
+    transform: scale(1.2) rotate(90deg);
+  }
+  &:active { transform: scale(0.9); }
+}
+
+// ── Footer ───────────────────────────────────────────────────
+.sidebar-footer {
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid $border-main;
+}
+
+.powered-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+  color: $sidebar-text;
+  letter-spacing: 0.04em;
+  transition: color 0.3s ease;
+  strong { color: $purple-700; transition: color 0.3s ease; }
+  &:hover strong { color: #6A1590; }
+}
+
+.powered-pulse-sm {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: $green-500;
+  animation: pulse 2.5s infinite;
+  box-shadow: 0 0 4px rgba($green-500, 0.3);
+}
+
+// ── Responsive ───────────────────────────────────────────────
+@media (max-width: 768px) {
+  .sidebar       { border-right: none; border-bottom: 1px solid $border-main; max-height: 160px; overflow: auto; padding: 12px; }
+  .sidebar.collapsed { display: none; }
+}

@@ -1,0 +1,121 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\DELL\\Desktop\\TP\\TC_ProjectCreationAI\\BackendAPI\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}|BackendAPI.csproj|c:\\users\\dell\\desktop\\tp\\tc_projectcreationai\\backendapi\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}|BackendAPI.csproj|solutionrelative:appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}|BackendAPI.csproj|c:\\users\\dell\\desktop\\tp\\tc_projectcreationai\\backendapi\\services\\externalapiservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}|BackendAPI.csproj|solutionrelative:services\\externalapiservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}|BackendAPI.csproj|c:\\users\\dell\\desktop\\tp\\tc_projectcreationai\\backendapi\\services\\dataassistservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}|BackendAPI.csproj|solutionrelative:services\\dataassistservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}|BackendAPI.csproj|c:\\users\\dell\\desktop\\tp\\tc_projectcreationai\\backendapi\\models\\projectwizardmodels.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}|BackendAPI.csproj|solutionrelative:models\\projectwizardmodels.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}|BackendAPI.csproj|c:\\users\\dell\\desktop\\tp\\tc_projectcreationai\\backendapi\\controllers\\projectwizardcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}|BackendAPI.csproj|solutionrelative:controllers\\projectwizardcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}|BackendAPI.csproj|c:\\users\\dell\\desktop\\tp\\tc_projectcreationai\\backendapi\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}|BackendAPI.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 2,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "ProjectWizardModels.cs",
+              "DocumentMoniker": "C:\\Users\\DELL\\Desktop\\TP\\TC_ProjectCreationAI\\BackendAPI\\Models\\ProjectWizardModels.cs",
+              "RelativeDocumentMoniker": "Models\\ProjectWizardModels.cs",
+              "ToolTip": "C:\\Users\\DELL\\Desktop\\TP\\TC_ProjectCreationAI\\BackendAPI\\Models\\ProjectWizardModels.cs",
+              "RelativeToolTip": "Models\\ProjectWizardModels.cs",
+              "ViewState": "AgIAAOAAAAAAAAAAAAA1wAQAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-30T16:34:19.635Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\Users\\DELL\\Desktop\\TP\\TC_ProjectCreationAI\\BackendAPI\\Program.cs",
+              "RelativeDocumentMoniker": "Program.cs",
+              "ToolTip": "C:\\Users\\DELL\\Desktop\\TP\\TC_ProjectCreationAI\\BackendAPI\\Program.cs",
+              "RelativeToolTip": "Program.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-27T12:16:46.972Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "C:\\Users\\DELL\\Desktop\\TP\\TC_ProjectCreationAI\\BackendAPI\\appsettings.json",
+              "RelativeDocumentMoniker": "appsettings.json",
+              "ToolTip": "C:\\Users\\DELL\\Desktop\\TP\\TC_ProjectCreationAI\\BackendAPI\\appsettings.json",
+              "RelativeToolTip": "appsettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAAEAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2026-03-23T16:50:24.375Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "DataAssistService.cs",
+              "DocumentMoniker": "C:\\Users\\DELL\\Desktop\\TP\\TC_ProjectCreationAI\\BackendAPI\\Services\\DataAssistService.cs",
+              "RelativeDocumentMoniker": "Services\\DataAssistService.cs",
+              "ToolTip": "C:\\Users\\DELL\\Desktop\\TP\\TC_ProjectCreationAI\\BackendAPI\\Services\\DataAssistService.cs",
+              "RelativeToolTip": "Services\\DataAssistService.cs",
+              "ViewState": "AgIAAB8CAAAAAAAAAAAAANsBAAAOAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-23T18:15:26.674Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "ExternalApiService.cs",
+              "DocumentMoniker": "C:\\Users\\DELL\\Desktop\\TP\\TC_ProjectCreationAI\\BackendAPI\\Services\\ExternalApiService.cs",
+              "RelativeDocumentMoniker": "Services\\ExternalApiService.cs",
+              "ToolTip": "C:\\Users\\DELL\\Desktop\\TP\\TC_ProjectCreationAI\\BackendAPI\\Services\\ExternalApiService.cs",
+              "RelativeToolTip": "Services\\ExternalApiService.cs",
+              "ViewState": "AgIAAB4CAAAAAAAAAAAAAOkAAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-24T04:49:38.585Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "ProjectWizardController.cs",
+              "DocumentMoniker": "C:\\Users\\DELL\\Desktop\\TP\\TC_ProjectCreationAI\\BackendAPI\\Controllers\\ProjectWizardController.cs",
+              "RelativeDocumentMoniker": "Controllers\\ProjectWizardController.cs",
+              "ToolTip": "C:\\Users\\DELL\\Desktop\\TP\\TC_ProjectCreationAI\\BackendAPI\\Controllers\\ProjectWizardController.cs",
+              "RelativeToolTip": "Controllers\\ProjectWizardController.cs",
+              "ViewState": "AgIAACwAAAAAAAAAAAAgwBYAAABSAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-24T04:49:20.915Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

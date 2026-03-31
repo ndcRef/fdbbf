@@ -1,0 +1,502 @@
+<!-- AI Consent Overlay (shown at start before user can interact) -->
+@if (!svc.aiConsent() && !svc.projectSubmitted()) {
+  <div class="consent-overlay">
+    <div class="consent-card engine-panel">
+      <div class="engine-status-bar">
+        <span class="engine-status-dot"></span>
+        <span class="engine-status-text">Engine Ready</span>
+        <span class="engine-version">v2.0</span>
+      </div>
+
+      <div class="engine-header">
+        <div class="engine-icon" [innerHTML]="icon('gear', 22)"></div>
+        <div class="engine-title-block">
+          <h3 class="consent-title">TC One Click <span class="engine-badge">AI</span></h3>
+          <span class="engine-subtitle">Execution Engine</span>
+        </div>
+      </div>
+
+      <p class="consent-desc">
+        Instantly creates your Transformation Cockpit project from a simple description and fills in everything for you:
+      </p>
+
+      <div class="engine-capabilities">
+        <div class="engine-cap">
+          <span class="cap-indicator"></span>
+          <span class="cap-text">Reads your description and picks the right fields</span>
+        </div>
+        <div class="engine-cap">
+          <span class="cap-indicator"></span>
+          <span class="cap-text">Intelligently fills all 4 tabs for you</span>
+        </div>
+        <div class="engine-cap">
+          <span class="cap-indicator"></span>
+          <span class="cap-text">Every dropdown matched against live TC data</span>
+        </div>
+        <div class="engine-cap">
+          <span class="cap-indicator"></span>
+          <span class="cap-text">Auto-saves &amp; submits to Transformation Cockpit</span>
+        </div>
+      </div>
+
+      <div class="consent-powered">Powered by <strong>TP Data Assist</strong></div>
+
+      <label class="ai-consent-label" [class.checked]="svc.aiConsent()">
+        <input type="checkbox"
+               [checked]="svc.aiConsent()"
+               (change)="svc.aiConsent.set($any($event.target).checked)" />
+        <span class="ai-consent-check" [innerHTML]="icon('consentCheck', 12, '0 0 12 12')"></span>
+        <span class="ai-consent-text">
+          I acknowledge and consent to using <strong>TC One Click AI</strong> for creating this project.
+        </span>
+      </label>
+    </div>
+  </div>
+}
+
+<!-- NLP Preview Card -->
+@if (svc.activeField() === 'nlp_preview' && !svc.loading()) {
+  <div class="confirm-card nlp-preview-card">
+    <h3>Here's what I understood</h3>
+    <p class="confirm-sub">
+      Review the extracted data below. If everything looks good, click <strong>Looks Good — Start Engine</strong>.
+      Missing fields will be prompted during the auto-fill flow.
+    </p>
+
+    @if (svc.nlpPreviewTab1()) {
+      <div class="preview-section">
+        <div class="preview-section-head">
+          <span class="ls-badge ls-tab1">Tab 1</span>
+          <span class="preview-section-title">Basic Info</span>
+          <span class="preview-check">✓ Resolved</span>
+        </div>
+        <div class="confirm-grid">
+          <div class="cg-item"><span class="cg-label">Cluster</span><span class="cg-value">{{ svc.nlpPreviewTab1()!.cluster }}</span></div>
+          <div class="cg-item"><span class="cg-label">Country</span><span class="cg-value">{{ svc.nlpPreviewTab1()!.country }}</span></div>
+          <div class="cg-item"><span class="cg-label">Company</span><span class="cg-value">{{ svc.nlpPreviewTab1()!.company }}</span></div>
+          <div class="cg-item"><span class="cg-label">Client</span><span class="cg-value">{{ svc.nlpPreviewTab1()!.client }}</span></div>
+          <div class="cg-item"><span class="cg-label">LOB</span><span class="cg-value">{{ svc.nlpPreviewTab1()!.lob }}</span></div>
+        </div>
+      </div>
+    }
+
+    @if (svc.nlpParsed()) {
+      <div class="preview-section">
+        <div class="preview-section-head">
+          <span class="ls-badge ls-tab2">Tab 2</span>
+          <span class="preview-section-title">Project Details</span>
+          @if (svc.nlpParsed()!.transformationType && svc.nlpParsed()!.objective && svc.nlpParsed()!.nature) {
+            <span class="preview-check">✓ Extracted</span>
+          } @else {
+            <span class="preview-partial">Partial — engine will ask</span>
+          }
+        </div>
+        <div class="confirm-grid">
+          @for (f of NLP2; track f.key) {
+            @if (v(svc.nlpParsed()!, f.key)) {
+              <div class="cg-item" [class.cg-full-row]="!!f.full"><span class="cg-label">{{ f.label }}</span><span class="cg-value" [class.cg-value-sm]="!!f.sm">{{ v(svc.nlpParsed()!, f.key) }}{{ f.sfx || '' }}</span></div>
+            }
+          }
+        </div>
+      </div>
+
+      <!-- Tab 3: Financials -->
+      <div class="preview-section">
+        <div class="preview-section-head">
+          <span class="ls-badge ls-tab3">Tab 3</span>
+          <span class="preview-section-title">Financials</span>
+          @if (svc.nlpParsed()!.expectedRevenue || svc.nlpParsed()!.estimatedProjectCost) {
+            <span class="preview-check">✓ Extracted</span>
+          } @else {
+            <span class="preview-partial">Optional — will auto-save</span>
+          }
+        </div>
+        @if (svc.nlpParsed()!.expectedRevenue || svc.nlpParsed()!.estimatedProjectCost || svc.nlpParsed()!.expectedClientBenefit || svc.nlpParsed()!.expectedInternalBenefit) {
+          <div class="confirm-grid">
+            @for (f of NLP3; track f.key) {
+              @if (v(svc.nlpParsed()!, f.key)) {
+                <div class="cg-item"><span class="cg-label">{{ f.label }}</span><span class="cg-value">{{ v(svc.nlpParsed()!, f.key) }}</span></div>
+              }
+            }
+          </div>
+        } @else {
+          <p class="preview-empty-note">No financial data extracted — will be handled during auto-fill.</p>
+        }
+      </div>
+
+      <!-- Tab 4: KPI -->
+      <div class="preview-section">
+        <div class="preview-section-head">
+          <span class="ls-badge ls-tab4">Tab 4</span>
+          <span class="preview-section-title">KPI</span>
+          @if (svc.nlpParsed()!.metricGroup && svc.nlpParsed()!.metric) {
+            <span class="preview-check">✓ Extracted</span>
+          } @else {
+            <span class="preview-partial">Will ask during flow</span>
+          }
+        </div>
+        @if (svc.nlpParsed()!.metricGroup || svc.nlpParsed()!.metric || svc.nlpParsed()!.asIsValue) {
+          <div class="confirm-grid">
+            @for (f of NLP4; track f.key) {
+              @if (v(svc.nlpParsed()!, f.key)) {
+                <div class="cg-item" [class.cg-full-row]="!!f.full"><span class="cg-label">{{ f.label }}</span><span class="cg-value" [class.cg-value-sm]="!!f.sm">{{ v(svc.nlpParsed()!, f.key) }}</span></div>
+              }
+            }
+          </div>
+        } @else {
+          <p class="preview-empty-note">No KPI data extracted — will be prompted by the engine.</p>
+        }
+      </div>
+    }
+
+    <div class="preview-actions">
+      <button class="btn btn-primary btn-glow btn-save"
+              [disabled]="svc.loading()"
+              (click)="svc.h.confirmNlpPreview()">
+        Looks Good — Start Engine →
+      </button>
+      <button class="btn btn-secondary"
+              [disabled]="svc.loading()"
+              (click)="svc.resetAll()">
+        Start Over
+      </button>
+    </div>
+  </div>
+}
+
+<!-- Pre-flight Card -->
+@if (svc.activeField() === 'preflight' && !svc.loading()) {
+  <div class="confirm-card kpi-form-card preflight-card">
+    <h3>Fill Missing Fields</h3>
+    <p class="confirm-sub">
+      The engine extracted what it could from your description.
+      Fill the fields below — all in one go — then click <strong>Start Engine</strong>.
+      Any field left blank will be asked by the engine at that step.
+    </p>
+
+    <!-- Section 1: Project Details (dropdowns) -->
+    <div class="preflight-section-label">📋 Project Details</div>
+    <div class="kpi-form">
+      @for (f of PRE; track f.key) {
+        @if (!v(svc.nlpParsed(), f.nlpKey)) {
+          <div class="kpi-field">
+            <label class="kpi-label">{{ f.label }} <span class="kpi-required">*</span></label>
+            <select class="kpi-input" [title]="f.label" [attr.aria-label]="f.label"
+                    [value]="v(svc.preflightForm(), f.key)"
+                    (change)="updatePreflightField($any(f.key), $event)">
+              <option value="">— Select —</option>
+              @for (opt of f.opts; track opt) { <option [value]="opt">{{ opt }}</option> }
+            </select>
+          </div>
+        }
+      }
+      @if (!svc.nlpParsed()?.projectName) {
+        <div class="kpi-field preflight-full-row">
+          <label class="kpi-label">Project Name <span class="kpi-required">*</span></label>
+          <input class="kpi-input" type="text" placeholder="Enter a descriptive project name"
+                 [value]="svc.preflightForm().projectName"
+                 (input)="updatePreflightField('projectName', $event)" />
+        </div>
+      }
+    </div>
+
+    <!-- Section 2: Duration & Timeline -->
+    @if (!svc.nlpParsed()?.deploymentDuration || !svc.nlpParsed()?.paybackPeriod) {
+      <div class="preflight-section-label">⏱ Duration &amp; Timeline</div>
+      <div class="kpi-form">
+        @if (!svc.nlpParsed()?.deploymentDuration) {
+          <div class="kpi-field">
+            <label class="kpi-label">Deployment Duration (months)</label>
+            <input class="kpi-input" type="number" min="1" placeholder="e.g. 6"
+                   [value]="svc.preflightForm().deploymentDuration"
+                   (input)="updatePreflightField('deploymentDuration', $event)" />
+          </div>
+        }
+        @if (!svc.nlpParsed()?.paybackPeriod) {
+          <div class="kpi-field">
+            <label class="kpi-label">Payback Period (months)</label>
+            <input class="kpi-input" type="number" min="1" placeholder="e.g. 12"
+                   [value]="svc.preflightForm().paybackPeriod"
+                   (input)="updatePreflightField('paybackPeriod', $event)" />
+          </div>
+        }
+      </div>
+    }
+
+    <!-- Section 3: Financials -->
+    @if (!svc.nlpParsed()?.expectedRevenue || !svc.nlpParsed()?.estimatedProjectCost) {
+      <div class="preflight-section-label">💰 Financials</div>
+      <div class="kpi-form">
+        @if (!svc.nlpParsed()?.expectedRevenue) {
+          <div class="kpi-field">
+            <label class="kpi-label">Expected Revenue</label>
+            <input class="kpi-input" type="text" placeholder="e.g. 50000"
+                   [value]="svc.preflightForm().expectedRevenue"
+                   (input)="updatePreflightField('expectedRevenue', $event)" />
+          </div>
+        }
+        @if (!svc.nlpParsed()?.estimatedProjectCost) {
+          <div class="kpi-field">
+            <label class="kpi-label">Estimated Project Cost</label>
+            <input class="kpi-input" type="text" placeholder="e.g. 10000"
+                   [value]="svc.preflightForm().estimatedProjectCost"
+                   (input)="updatePreflightField('estimatedProjectCost', $event)" />
+          </div>
+        }
+        @if (!svc.nlpParsed()?.currency) {
+          <div class="kpi-field">
+            <label class="kpi-label">Currency</label>
+            <input class="kpi-input" type="text" placeholder="e.g. USD"
+                   [value]="svc.preflightForm().currency"
+                   (input)="updatePreflightField('currency', $event)" />
+          </div>
+        }
+      </div>
+    }
+
+    <!-- Section 4: KPI Values -->
+    @if (!svc.nlpParsed()?.asIsValue || !svc.nlpParsed()?.toBeValue) {
+      <div class="preflight-section-label">📊 KPI Values</div>
+      <div class="kpi-form">
+        @if (!svc.nlpParsed()?.asIsValue) {
+          <div class="kpi-field">
+            <label class="kpi-label">As-Is Value</label>
+            <input class="kpi-input" type="text" placeholder="Current state value"
+                   [value]="svc.preflightForm().asIsValue"
+                   (input)="updatePreflightField('asIsValue', $event)" />
+          </div>
+        }
+        @if (!svc.nlpParsed()?.toBeValue) {
+          <div class="kpi-field">
+            <label class="kpi-label">To-Be Value</label>
+            <input class="kpi-input" type="text" placeholder="Target state value"
+                   [value]="svc.preflightForm().toBeValue"
+                   (input)="updatePreflightField('toBeValue', $event)" />
+          </div>
+        }
+      </div>
+    }
+
+    <div class="preflight-actions">
+      <button class="btn btn-primary btn-glow btn-save"
+              [disabled]="svc.loading()"
+              (click)="svc.h.submitPreflight()">
+        Start Engine →
+      </button>
+      <span class="preflight-skip-note">Unfilled fields will be prompted by the engine.</span>
+    </div>
+  </div>
+}
+
+<!-- Confirm Card (Tab 1) — hidden during auto-fill -->
+@if (svc.activeField() === 'confirm' && !svc.draftSaved() && !svc.autoFillActive()) {
+  <div class="confirm-card">
+    <h3>Confirm Basic Info</h3>
+    <p class="confirm-sub">Everything look good? Hit save or just type &ldquo;save&rdquo;.</p>
+    <div class="confirm-grid">
+      <div class="cg-item"><span class="cg-label">Cluster</span><span class="cg-value">{{ svc.summary().clusterName || EMPTY }}</span></div>
+      <div class="cg-item"><span class="cg-label">Country</span><span class="cg-value">{{ svc.summary().clusterCountryName || EMPTY }}</span></div>
+      <div class="cg-item"><span class="cg-label">Company</span><span class="cg-value">{{ svc.summary().companyName || EMPTY }}</span></div>
+      <div class="cg-item"><span class="cg-label">Client</span><span class="cg-value">{{ svc.summary().clientName || EMPTY }}</span></div>
+      <div class="cg-item"><span class="cg-label">LOB</span><span class="cg-value">{{ svc.summary().lobName || EMPTY }}</span></div>
+      @if (svc.summary().operationalLob) {
+        <div class="cg-item"><span class="cg-label">Operational LOB</span><span class="cg-value">{{ svc.summary().operationalLob }}</span></div>
+      }
+      <div class="cg-item"><span class="cg-label">Industry</span><span class="cg-value">{{ svc.summary().industryName || EMPTY }}</span></div>
+      <div class="cg-item"><span class="cg-label">Language</span><span class="cg-value">{{ svc.summary().languageName || EMPTY }}</span></div>
+      @if (svc.summary().isSecondary) {
+        <div class="cg-item"><span class="cg-label">Type</span><span class="cg-value">Secondary</span></div>
+      }
+      @if (svc.summary().primaryProjectName) {
+        <div class="cg-item"><span class="cg-label">Primary</span><span class="cg-value">{{ svc.summary().primaryProjectName }}</span></div>
+      }
+    </div>
+    <button class="btn btn-primary btn-glow btn-save" [disabled]="svc.loading()" (click)="svc.h.saveDraft()">
+      Save Basic Info
+    </button>
+  </div>
+}
+
+<!-- Tab 2 Confirm Card — hidden during auto-fill -->
+@if (svc.activeField() === 'tab2_confirm' && !svc.draftSaved() && !svc.autoFillActive()) {
+  <div class="confirm-card">
+    <h3>Confirm Project Details</h3>
+    <p class="confirm-sub">Everything look good? Hit save or just type &ldquo;save&rdquo;.</p>
+    <div class="confirm-grid">
+      @for (f of T2G; track f.key) {
+        @if (f.always || v(svc.summary(), f.key)) {
+          <div class="cg-item"><span class="cg-label">{{ f.label }}</span><span class="cg-value">{{ v(svc.summary(), f.key) || EMPTY }}</span></div>
+        }
+      }
+    </div>
+    <button class="btn btn-primary btn-glow btn-save" [disabled]="svc.loading()" (click)="svc.h.saveTab2Draft()">
+      Save Project Details
+    </button>
+  </div>
+}
+
+<!-- Financial Form Card (Tab 3) -->
+@if (svc.activeField() === 'tab3_financials' && !svc.loading()) {
+  <div class="confirm-card kpi-form-card">
+    <h3>Financials
+      @if (svc.summary().objectiveName === 'Sell More') {
+        <span class="confirm-required">(Expected Revenue is required)</span>
+      } @else {
+        <span class="confirm-optional">(all optional)</span>
+      }
+    </h3>
+    <p class="confirm-sub">
+      @if (svc.summary().objectiveName === 'Sell More') {
+        Objective is <strong>Sell More</strong> — <strong>Expected Revenue</strong> is mandatory. Fill in other figures as needed, or click <strong>Skip Financials</strong> to proceed (Expected Revenue will still be required).
+      } @else {
+        Fill in any relevant financial figures, or click <strong>Skip Financials</strong> to proceed with empty values.
+      }
+    </p>
+    <div class="kpi-form">
+      @for (f of FIN; track f.key) {
+        <div class="kpi-field">
+          <label class="kpi-label">{{ f.label }} @if (f.req && isSellMore()) { <span class="kpi-required"> *</span> }</label>
+          <input class="kpi-input" type="text" [title]="f.label"
+                 [class.kpi-input-required]="!!f.req && isSellMore() && !v(svc.financialForm(), f.key)"
+                 [placeholder]="f.req && isSellMore() ? 'Required — e.g. 50000' : f.ph"
+                 [value]="v(svc.financialForm(), f.key)" (input)="updateFinancialField($any(f.key), $event)" />
+        </div>
+      }
+    </div>
+    <div class="kpi-actions">
+      <button class="btn btn-secondary"
+              [disabled]="svc.loading() || (svc.summary().objectiveName === 'Sell More' && !svc.financialForm().expectedRevenue)"
+              [title]="svc.summary().objectiveName === 'Sell More' && !svc.financialForm().expectedRevenue ? 'Expected Revenue is required when Objective is Sell More' : ''"
+              (click)="svc.h.skipTab3Financials()">
+        Skip Financials
+      </button>
+      <button class="btn btn-primary btn-glow" [disabled]="svc.loading()" (click)="svc.h.saveTab3Financials()">
+        Save Financials
+      </button>
+    </div>
+  </div>
+}
+
+<!-- KPI Form Card -->
+@if (svc.activeField() === 'kpi_values' && !svc.loading()) {
+  <div class="confirm-card kpi-form-card">
+    <h3>Add KPI Values</h3>
+    <p class="confirm-sub">{{ svc.summary().kpiMetricGroupName }} &rarr; {{ svc.summary().kpiMetricName }}</p>
+    <div class="kpi-form">
+      @for (f of KPI; track f.key) {
+        <div class="kpi-field">
+          <label class="kpi-label">{{ f.label }} @if (f.req) { <span class="kpi-req">*</span> }</label>
+          <input class="kpi-input" type="text" [placeholder]="f.ph"
+                 [value]="v(svc.kpiForm(), f.key)" (input)="updateKpiField($any(f.key), $event)" />
+        </div>
+      }
+    </div>
+    <button class="btn btn-primary btn-glow btn-save"
+            [disabled]="svc.loading() || !svc.kpiForm().asIs.trim() || !svc.kpiForm().toBe.trim()"
+            (click)="svc.h.addKpi()">
+      Add KPI
+    </button>
+  </div>
+}
+
+<!-- KPI List Card -->
+@if ((svc.activeField() === 'kpi_list' || svc.activeField() === 'tab4_confirm') && svc.kpiList().length > 0 && !svc.loading() && !svc.projectSubmitted()) {
+  <div class="confirm-card kpi-list-card">
+    <h3>KPIs Added ({{ svc.kpiList().length }})</h3>
+    <div class="kpi-table">
+      @for (kpi of svc.kpiList(); track kpi.metricrowid; let idx = $index) {
+        <div class="kpi-row">
+          <div class="kpi-row-header">
+            <span class="kpi-row-num">{{ idx + 1 }}</span>
+            <span class="kpi-row-name">{{ kpi.metricGroupName }} &rarr; {{ kpi.metricName }}</span>
+            @if (svc.activeField() === 'kpi_list') {
+              <button class="kpi-row-del" (click)="onDeleteKpi(kpi.metricrowid!)" title="Delete KPI">&times;</button>
+            }
+          </div>
+          <div class="kpi-row-values">
+            <span class="kpi-rv"><strong>As-Is:</strong> {{ kpi.AS_IS }}</span>
+            <span class="kpi-rv"><strong>To-Be:</strong> {{ kpi.TO_BE }}</span>
+            @if (kpi.WOULD_BE) { <span class="kpi-rv"><strong>Would-Be:</strong> {{ kpi.WOULD_BE }}</span> }
+            @if (kpi.lastSnapshot) { <span class="kpi-rv"><strong>Snapshot:</strong> {{ kpi.lastSnapshot }}</span> }
+            @if (kpi.description) { <span class="kpi-rv"><strong>Desc:</strong> {{ kpi.description }}</span> }
+          </div>
+        </div>
+      }
+    </div>
+    @if (svc.activeField() === 'kpi_list') {
+      <div class="kpi-actions">
+        <button class="btn btn-secondary" (click)="svc.h.loadMetricGroups()">Add More KPIs</button>
+        <button class="btn btn-primary btn-glow" (click)="svc.h.showTab4Confirm()">Proceed to Submit</button>
+      </div>
+    }
+  </div>
+}
+
+<!-- Tab 4 Confirm Card -->
+@if (svc.activeField() === 'tab4_confirm' && !svc.projectSubmitted()) {
+  <div class="confirm-card">
+    <h3>Submit Project</h3>
+    <p class="confirm-sub">All {{ svc.kpiList().length }} KPIs are ready. Submit the project or type &ldquo;submit&rdquo;.</p>
+    <button class="btn btn-primary btn-glow btn-save" [disabled]="svc.loading()" (click)="svc.h.saveTab4Final()">
+      Submit Project
+    </button>
+  </div>
+}
+
+<!-- Success Screen -->
+@if (svc.projectSubmitted()) {
+  <div class="success-overlay">
+    <div class="so-bg-orbs">
+      <span class="orb orb-1"></span><span class="orb orb-2"></span><span class="orb orb-3"></span>
+    </div>
+    <div class="success-confetti">@for (i of [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25]; track $index) { <span></span> }</div>
+    <div class="so-sparkles">@for (i of [1,2,3,4,5,6]; track $index) { <span></span> }</div>
+    <div class="so-content">
+      <div class="success-icon">
+        <div class="si-ring si-ring-1"></div>
+        <div class="si-ring si-ring-2"></div>
+        <span [innerHTML]="icon('successCheck', 24)"></span>
+      </div>
+      <h2 class="success-title">Congratulations! &#x1F389;</h2>
+      <p class="success-subtitle">Your project has been created successfully</p>
+      @if (svc.viewOpportunityId()) {
+        <div class="success-project-badge">
+          <span class="spb-label">Project Name</span>
+          <span class="spb-name">{{ svc.viewOpportunityId() }}</span>
+          <div class="spb-shimmer"></div>
+        </div>
+      }
+      <div class="success-stats">
+        @if (svc.executionDuration()) {
+          <div class="stat-chip chip-d1">
+            <div class="sc-icon" [innerHTML]="icon('clock', 16)"></div>
+            <span class="stat-label">Completed in</span>
+            <span class="stat-value">{{ svc.executionDuration() }}</span>
+          </div>
+        }
+        <div class="stat-chip chip-d2">
+          <div class="sc-icon" [innerHTML]="icon('clipboard', 16)"></div>
+          <span class="stat-label">Tabs</span>
+          <span class="stat-value">4 / 4</span>
+        </div>
+        @if (svc.kpiList().length) {
+          <div class="stat-chip chip-d3">
+            <div class="sc-icon" [innerHTML]="icon('barChart', 16)"></div>
+            <span class="stat-label">KPIs</span>
+            <span class="stat-value">{{ svc.kpiList().length }}</span>
+          </div>
+        }
+      </div>
+      <div class="success-actions">
+        <button class="sa-btn sa-btn-primary" disabled>
+          <span [innerHTML]="icon('externalLink', 15)"></span>
+          Open in Cockpit
+        </button>
+        <button class="sa-btn sa-btn-secondary" (click)="svc.resetAll()">
+          <span [innerHTML]="icon('plus', 15)"></span>
+          Create Another Project
+        </button>
+      </div>
+    </div>
+  </div>
+}

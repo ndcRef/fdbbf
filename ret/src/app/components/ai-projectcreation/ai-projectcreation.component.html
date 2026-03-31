@@ -1,0 +1,718 @@
+<!-- ai-projectcreation.component.html — Optimized Angular 20 -->
+<div class="wizard" [class.sidebar-collapsed]="svc.sidebarCollapsed()">
+  <wizard-sidebar />
+
+  <main class="main">
+    <div class="bg-particles-layer" [class.active]="svc.loading()">
+      <span class="bg-p"></span><span class="bg-p"></span><span class="bg-p"></span>
+      <span class="bg-p"></span><span class="bg-p"></span><span class="bg-p"></span>
+      <span class="bg-p"></span><span class="bg-p"></span><span class="bg-p"></span>
+      <span class="bg-p"></span><span class="bg-p"></span><span class="bg-p"></span>
+    </div>
+
+    <header class="main-header">
+      <div class="header-engine">
+        <span class="status-indicator" [class.processing]="svc.loading()"></span>
+        <span class="header-status" [class.processing]="svc.loading()">
+          {{ svc.loading() ? 'Processing' : 'Online' }}
+        </span>
+      </div>
+      <span class="header-title">TC One Click</span>
+      <span class="header-badge">AI</span>
+      <span class="header-subtitle">Project Generator</span>
+      <span class="header-spacer"></span>
+      @if (svc.canResetCurrent()) {
+        <button class="reset-btn reset-current" (click)="svc.resetCurrent()" title="Undo current step">
+          <span [innerHTML]="icon('undo', 12)"></span> Undo Step
+        </button>
+      }
+      @if (svc.canResetAll()) {
+        <button class="reset-btn reset-all" (click)="svc.resetAll()" title="Start over from scratch">
+          <span [innerHTML]="icon('reset', 12)"></span> Reset All
+        </button>
+      }
+      <span class="header-powered">Powered by <strong>TP Data Assist</strong></span>
+    </header>
+
+    <section class="chat" [class.chat-no-scroll]="svc.loading() && svc.loadingMode() === 'full'" #chatContainer (scroll)="onChatScroll()">
+      <div class="chat-anchor">
+        @for (group of displayGroups(); track $index) {
+
+          <!-- Engine Panel (grouped status) -->
+          @if (group.kind === 'engine') {
+            <div class="engine-batch" [class.expanded]="isGroupExpanded(group.groupId!)">
+              <button class="eb-header" (click)="toggleEngineGroup(group.groupId!)">
+                <span class="eb-icon-wrap">
+                  <span class="eb-gear" [innerHTML]="icon('gear')"></span>
+                </span>
+                <span class="eb-title">
+                  <span class="eb-title-text">TC Services processed</span>
+                  <span class="eb-count">{{ group.items!.length }} steps</span>
+                </span>
+                <span class="eb-mini-progress">
+                  @for (item of group.items!; track $index; let si = $index) {
+                    <span class="eb-mini-dot done" [style.animation-delay]="si * 0.05 + 's'"></span>
+                  }
+                </span>
+                <span class="eb-chevron" [class.open]="isGroupExpanded(group.groupId!)">
+                  <span [innerHTML]="icon('chevron', 12)"></span>
+                </span>
+              </button>
+              @if (isGroupExpanded(group.groupId!)) {
+                <div class="eb-body">
+                  <div class="eb-timeline">
+                    @for (item of group.items!; track $index; let si = $index) {
+                      <div class="eb-step" [style.animation-delay]="si * 0.06 + 's'">
+                        <span class="eb-step-line"></span>
+                        <span class="eb-step-dot" [innerHTML]="icon('check', 10)"></span>
+                        <span class="eb-step-text">{{ item.text }}</span>
+                      </div>
+                    }
+                  </div>
+                  <div class="eb-sparkles">
+                    <span class="eb-spark"></span><span class="eb-spark"></span>
+                    <span class="eb-spark"></span><span class="eb-spark"></span>
+                  </div>
+                </div>
+              }
+            </div>
+          }
+
+          <!-- Landing Welcome Card -->
+          @if (group.kind === 'msg' && group.msg!.role === 'landing') {
+            <div class="landing-card">
+              <div class="landing-header">
+                <div class="landing-icon" [innerHTML]="icon('bolt', 22)"></div>
+                <div>
+                  <div class="landing-title">TC One Click — Project Generator</div>
+                  <div class="landing-sub">Paste your project details in one message — mention the field values as shown below and the engine fills all 4 tabs automatically.</div>
+                </div>
+              </div>
+              <div class="landing-grid">
+                <div class="landing-section">
+                  <div class="landing-section-head"><span class="ls-badge ls-tab1">1</span><span class="ls-title">Basic Info</span></div>
+                  <p class="ls-desc">Cluster, Country, Company, Client, LOB</p>
+                </div>
+                <div class="landing-section">
+                  <div class="landing-section-head"><span class="ls-badge ls-tab2">2</span><span class="ls-title">Project Details</span></div>
+                  <p class="ls-desc">Transformation Type, Objective, Nature, Project Name, Lead &amp; Sponsor, Status, Urgency</p>
+                </div>
+                <div class="landing-section">
+                  <div class="landing-section-head"><span class="ls-badge ls-tab3">3</span><span class="ls-title">Financials</span></div>
+                  <p class="ls-desc">Revenue, Costs, Benefits — mostly optional</p>
+                </div>
+                <div class="landing-section">
+                  <div class="landing-section-head"><span class="ls-badge ls-tab4">4</span><span class="ls-title">KPI</span></div>
+                  <p class="ls-desc">Metric Group, Metric, As-Is &amp; To-Be values</p>
+                </div>
+              </div>
+              <div class="landing-example">
+                <span class="le-label">Example</span>
+                <span class="le-text">“Create a project in APAC, China, TP China for Lenovo client, Care LOB. Consulting type, Problem Solving &amp; Improvement, Lean Six Sigma. Objective Deliver Better, nature Pilot. Name ‘AHT Reduction Q2’. Lead Avinash Yadav, sponsor Avinash Yadav. Status Implementation, DMAIC Define. Urgency High, strategic value High. All finance fields 1000. KPI Efficiency AHT as-is 300 to-be 240.”</span>
+              </div>
+              <div class="landing-tip">
+                <span [innerHTML]="icon('info')"></span>
+                <span>Any missing fields will be asked one by one. You can also attach a document or type <strong>secondary</strong> to link to an existing project.</span>
+              </div>
+            </div>
+          }
+
+          <!-- Regular Messages -->
+          @if (group.kind === 'msg' && group.msg!.role !== 'options' && group.msg!.role !== 'landing') {
+            @if (group.msg!.role === 'assistant' && isTextInputField()) {
+              <div class="text-input-card">
+                <div class="tic-header">
+                  <span class="tic-icon" [innerHTML]="icon('gear', 16)"></span>
+                  <span class="tic-title" [innerHTML]="renderMd(group.msg!.text)"></span>
+                </div>
+                <div class="tic-input-row">
+                  <input class="tic-input" #inlineInput
+                         [value]="userInput()" (input)="onInputChange(inlineInput.value)"
+                         (keydown.enter)="onInlineSubmit()" [placeholder]="svc.inputPlaceholder()"
+                         aria-label="Enter field value" autofocus />
+                  <button class="tic-submit" [disabled]="!userInput().trim()" (click)="onInlineSubmit()">
+                    <span [innerHTML]="icon('arrowRight')"></span> Submit
+                  </button>
+                </div>
+                @if (svc.activeField() === 'deployment_duration' || svc.activeField() === 'payback_period') {
+                  <div class="tic-footer">
+                    <button class="tic-skip" (click)="userInput.set('skip'); onInlineSubmit()">
+                      <span [innerHTML]="icon('arrowRight', 12)"></span> Skip — Not needed
+                    </button>
+                  </div>
+                }
+              </div>
+            } @else {
+              <div class="msg-row"
+                   [class.msg-user]="group.msg!.role === 'user'"
+                   [class.msg-status]="group.msg!.role === 'status'">
+                @if (group.msg!.role === 'assistant') {
+                  <div class="msg-step-icon" [innerHTML]="icon('gear')"></div>
+                }
+                <div class="msg-bubble"
+                     [class.bubble-user]="group.msg!.role === 'user'"
+                     [class.bubble-ai]="group.msg!.role === 'assistant'"
+                     [class.bubble-status]="group.msg!.role === 'status'">
+                  @if (group.msg!.role === 'status') { <span class="status-dot"></span> }
+                  @if (group.msg!.role === 'assistant') {
+                    <span [innerHTML]="renderMd(group.msg!.text)"></span>
+                  } @else { {{ group.msg!.text }} }
+                </div>
+              </div>
+            }
+          }
+
+          <!-- Options Area -->
+          @if (group.kind === 'msg' && group.msg!.role === 'options' && group.origIdx === svc.lastOptionsIdx()) {
+            @if (svc.loading()) {
+              <div class="options-area skeleton-area">
+                <span class="options-label">{{ group.msg!.text }}</span>
+                @for (s of [1,2,3,4,5,6]; track s) {
+                  <div class="skeleton-chip" [style.animation-delay]="s * 0.08 + 's'">
+                    <div class="skeleton-line skeleton-line-long"></div>
+                    <div class="skeleton-line skeleton-line-short"></div>
+                  </div>
+                }
+              </div>
+            }
+            @if (!svc.loading()) {
+              <div class="options-area">
+                <span class="options-label">{{ group.msg!.text }}</span>
+                @switch (svc.activeField()) {
+                  @case ('secondary_ask') {
+                    <div class="action-buttons">
+                      <button class="chip" (click)="svc.chooseNewPrimary()">New Primary</button>
+                      <button class="chip" (click)="svc.chooseSecondary()">Secondary</button>
+                    </div>
+                  }
+                  @case ('operational_lob') {
+                    <div class="select-panel">
+                      <div class="sp-header-row">
+                        <span class="sp-header-title">Operational LOB</span>
+                        <span class="sp-header-badge">Optional</span>
+                      </div>
+                      <div class="sp-search">
+                        <span class="sp-search-icon" [innerHTML]="icon('search')"></span>
+                        <input class="sp-input" placeholder="Type a keyword to search..." #opLobInput
+                               (keydown.enter)="onOpLobSearch(opLobInput.value)" />
+                        <button class="sp-search-btn" (click)="onOpLobSearch(opLobInput.value)">
+                          <span [innerHTML]="icon('search', 12)"></span> Search
+                        </button>
+                      </div>
+                      @if (filteredOptions().length) {
+                        <div class="sp-list">
+                          @for (item of filteredOptions(); track $index) {
+                            <button class="sp-item" (click)="selectItem(item)">
+                              <span class="sp-item-name">{{ getItemLabel(item) }}</span>
+                              <span class="sp-item-arrow" [innerHTML]="icon('arrow', 10)"></span>
+                            </button>
+                          }
+                        </div>
+                      }
+                      @if (opLobLastSearch() && !filteredOptions().length) {
+                        <div class="sp-custom-value">
+                          <button class="chip chip-use-custom" (click)="onOpLobUseCustom()">
+                            <span [innerHTML]="icon('check', 12)"></span> Use "{{ opLobLastSearch() }}" as custom value
+                          </button>
+                        </div>
+                      }
+                      <div class="sp-footer">
+                        <button class="chip chip-skip" (click)="onOpLobSkip()">
+                          <span [innerHTML]="icon('arrowRight', 12)"></span> Skip — Not needed
+                        </button>
+                      </div>
+                    </div>
+                  }
+                  @default {
+                    <div class="select-panel">
+                      <div class="sp-search">
+                        <span class="sp-search-icon" [innerHTML]="icon('search')"></span>
+                        <input class="sp-input" placeholder="Type to search..."
+                               [value]="ddSearch()" (input)="ddSearch.set(searchBox.value)" #searchBox />
+                        @if (ddSearch()) { <button class="sp-clear" (click)="ddSearch.set('')">&times;</button> }
+                        <span class="sp-badge">{{ filteredOptions().length }}</span>
+                      </div>
+                      <div class="sp-list">
+                        @for (item of filteredOptions(); track $index) {
+                          <button class="sp-item" (click)="selectItem(item)">
+                            <span class="sp-item-name">{{ getItemLabel(item) }}</span>
+                            <span class="sp-item-arrow" [innerHTML]="icon('arrow', 10)"></span>
+                          </button>
+                        } @empty {
+                          <div class="sp-empty">
+                            <span [innerHTML]="icon('searchEmpty', 16)"></span> No matching results
+                          </div>
+                        }
+                      </div>
+                      @if (svc.activeField() === 'client') {
+                        <div class="sp-footer">
+                          <button class="chip chip-warn" (click)="svc.chooseTpInternal()">TP Internal</button>
+                        </div>
+                      }
+                    </div>
+                  }
+                }
+              </div>
+            }
+          }
+        }
+
+        <!-- Transition Loader -->
+        @if (showTransitionLoader()) {
+          <div class="loading-state">
+            <div class="msg-step-icon" [innerHTML]="icon('gear')"></div>
+            <div class="loading-card">
+              <div class="lc-aurora"></div>
+              <div class="lc-bg-particles">
+                <span class="lc-bg-p"></span><span class="lc-bg-p"></span><span class="lc-bg-p"></span>
+                <span class="lc-bg-p"></span><span class="lc-bg-p"></span><span class="lc-bg-p"></span>
+              </div>
+              <div class="lc-top">
+                <div class="loading-visual">
+                  <div class="lv-ring lv-ring-outer"></div>
+                  <div class="lv-ring lv-ring-middle"></div>
+                  <div class="lv-ring lv-ring-inner"></div>
+                  <div class="lv-pulse"></div>
+                  <div class="lv-center" [innerHTML]="icon('bulb', 16)"></div>
+                  <div class="lv-particles">
+                    <span class="lv-particle"></span><span class="lv-particle"></span><span class="lv-particle"></span>
+                    <span class="lv-particle"></span><span class="lv-particle"></span><span class="lv-particle"></span>
+                  </div>
+                </div>
+                <div class="lc-info">
+                  <span class="lc-badge"><span class="lc-badge-dot"></span> TC Services Active</span>
+                  <span class="loading-label">Preparing next step…</span>
+                  <div class="lp-track"><div class="lp-fill"></div></div>
+                </div>
+              </div>
+              <div class="lc-dataflow">
+                <div class="lc-df-node lc-df-source lc-df-active">
+                  <span [innerHTML]="icon('tcServices', 16)"></span> TC Services
+                </div>
+                <div class="lc-df-line">
+                  <span class="lc-df-dot"></span><span class="lc-df-dot"></span><span class="lc-df-dot"></span>
+                </div>
+                <div class="lc-df-node lc-df-ai lc-df-active">
+                  <div class="lc-df-ai-glow"></div>
+                  <span [innerHTML]="icon('bulb', 16)"></span> AI Engine
+                </div>
+                <div class="lc-df-line">
+                  <span class="lc-df-dot"></span><span class="lc-df-dot"></span><span class="lc-df-dot"></span>
+                </div>
+                <div class="lc-df-node lc-df-result">
+                  <span [innerHTML]="icon('result', 16)"></span> Result
+                </div>
+              </div>
+            </div>
+          </div>
+        }
+
+        <!-- Processing Indicator -->
+        @if (svc.typing() && !svc.loading()) {
+          <div class="processing-indicator">
+            <div class="msg-step-icon" [innerHTML]="icon('gear')"></div>
+            <div class="processing-bar">
+              <div class="processing-track"><div class="processing-fill"></div></div>
+              <span class="processing-text">{{ systemActivity() || 'Processing…' }}</span>
+            </div>
+          </div>
+        }
+
+        <!-- Extraction Phase (NLP parsing — distinct from engine) -->
+        @if (isExtractionPhase()) {
+          <div class="loading-state">
+            <div class="msg-step-icon" [innerHTML]="icon('brain')"></div>
+            <div class="extraction-card">
+              <div class="ex-scan-bar"></div>
+
+              <!-- Ambient floating orbs -->
+              <div class="ex-ambient">
+                <span class="ex-orb ex-orb-1"></span>
+                <span class="ex-orb ex-orb-2"></span>
+                <span class="ex-orb ex-orb-3"></span>
+              </div>
+
+              <!-- Header -->
+              <div class="ex-header">
+                <div class="ex-header-left">
+                  <div class="ex-visual">
+                    <div class="ex-doc-icon" [innerHTML]="icon('docScan', 28)"></div>
+                    <div class="ex-scan-line"></div>
+                  </div>
+                  <div class="ex-info">
+                    <span class="ex-badge"><span class="ex-badge-pulse"></span> Smart Data Extraction</span>
+                    <span class="ex-title">{{ svc.loadingText() }}</span>
+                    <div class="ex-progress"><div class="ex-progress-fill"></div></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Body: Two-column layout -->
+              <div class="ex-body">
+                <!-- Left: Live Extraction Log -->
+                <div class="ex-feed">
+                  <div class="ex-feed-title"><span [innerHTML]="icon('bolt', 11)"></span> Live Extraction Log</div>
+                  <div class="ex-feed-list">
+                    @for (log of extractionLogs(); track $index) {
+                      <div class="ex-feed-row"
+                           [class.ex-feed-done]="log.state === 'done'"
+                           [class.ex-feed-active]="log.state === 'active'"
+                           [class.ex-feed-pending]="log.state === 'pending'">
+                        @if (log.state === 'done') {
+                          <span class="ex-feed-icon" [innerHTML]="icon('check', 10)"></span>
+                        } @else if (log.state === 'active') {
+                          <div class="ex-feed-spinner"></div>
+                        } @else {
+                          <span class="ex-feed-icon" [innerHTML]="icon('circle', 10)"></span>
+                        }
+                        <span class="ex-feed-name">{{ log.text }}</span>
+                        @if (log.state === 'done') {
+                          <span class="ex-feed-tag" [class.ex-feed-tag-alt]="log.tab === 2" [class.ex-feed-tag-fin]="log.tab === 3" [class.ex-feed-tag-kpi]="log.tab === 4">Done</span>
+                        } @else if (log.state === 'active') {
+                          <span class="ex-feed-tag ex-feed-tag-running">Tab {{ log.tab }}</span>
+                        }
+                      </div>
+                    }
+                    @if (!extractionLogs().length) {
+                      <div class="ex-feed-row ex-feed-active"><div class="ex-feed-spinner"></div><span class="ex-feed-name">Initializing extraction pipeline...</span></div>
+                    }
+                  </div>
+                </div>
+
+                <!-- Right: Tab Targets + Cascade -->
+                <div class="ex-tabs-panel">
+                  <div class="ex-feed-title"><span [innerHTML]="icon('gear', 11)"></span> Target Modules</div>
+                  <div class="ex-tab-cards">
+                    <div class="ex-tab-card" [class.ex-tab-active]="extractionTabPhase() === 1" [class.ex-tab-done]="extractionTabPhase() > 1">
+                      <div class="ex-tab-num">1</div>
+                      <div class="ex-tab-detail">
+                        <span class="ex-tab-name">Basic Info</span>
+                        <span class="ex-tab-fields">Cluster · Country · Company · Client · LOB</span>
+                      </div>
+                      <div class="ex-tab-status">
+                        @if (extractionTabPhase() === 1) {
+                          <div class="ex-tab-spinner"></div>
+                        } @else {
+                          <span class="ex-tab-check" [innerHTML]="icon('check', 12)"></span>
+                        }
+                      </div>
+                    </div>
+                    <div class="ex-tab-card" [class.ex-tab-active]="extractionTabPhase() === 2" [class.ex-tab-done]="extractionTabPhase() > 2">
+                      <div class="ex-tab-num">2</div>
+                      <div class="ex-tab-detail">
+                        <span class="ex-tab-name">Project Details</span>
+                        <span class="ex-tab-fields">Type · Objective · Nature · Name · Lead · Status · Urgency</span>
+                      </div>
+                      <div class="ex-tab-status">
+                        @if (extractionTabPhase() === 2) {
+                          <div class="ex-tab-spinner"></div>
+                        } @else if (extractionTabPhase() > 2) {
+                          <span class="ex-tab-check" [innerHTML]="icon('check', 12)"></span>
+                        } @else {
+                          <span class="ex-tab-wait-txt">—</span>
+                        }
+                      </div>
+                    </div>
+                    <div class="ex-tab-card" [class.ex-tab-active]="extractionTabPhase() === 3" [class.ex-tab-done]="extractionTabPhase() > 3">
+                      <div class="ex-tab-num">3</div>
+                      <div class="ex-tab-detail">
+                        <span class="ex-tab-name">Financials</span>
+                        <span class="ex-tab-fields">Revenue · Cost · Currency · Internal Benefit · Client Benefit</span>
+                      </div>
+                      <div class="ex-tab-status">
+                        @if (extractionTabPhase() === 3) {
+                          <div class="ex-tab-spinner"></div>
+                        } @else if (extractionTabPhase() > 3) {
+                          <span class="ex-tab-check" [innerHTML]="icon('check', 12)"></span>
+                        } @else {
+                          <span class="ex-tab-wait-txt">—</span>
+                        }
+                      </div>
+                    </div>
+                    <div class="ex-tab-card" [class.ex-tab-active]="extractionTabPhase() === 4" [class.ex-tab-done]="extractionTabPhase() > 4">
+                      <div class="ex-tab-num">4</div>
+                      <div class="ex-tab-detail">
+                        <span class="ex-tab-name">KPI</span>
+                        <span class="ex-tab-fields">Metric Group · Metric · As-Is · To-Be · Would-Be</span>
+                      </div>
+                      <div class="ex-tab-status">
+                        @if (extractionTabPhase() === 4) {
+                          <div class="ex-tab-spinner"></div>
+                        } @else {
+                          <span class="ex-tab-wait-txt">—</span>
+                        }
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Cascade Resolution — shows real resolved values when available -->
+                  <div class="ex-cascade">
+                    <div class="ex-feed-title" style="margin-top: 10px"><span [innerHTML]="icon('search', 11)"></span> Cascade Resolution</div>
+                    <div class="ex-dd-row" [class.ex-dd-done]="svc.summary().clusterName">
+                      <span class="ex-dd-label"><span [innerHTML]="icon('arrow', 8)"></span> Cluster</span>
+                      @if (svc.summary().clusterName) {
+                        <span class="ex-dd-value">{{ svc.summary().clusterName }}</span>
+                      } @else {
+                        <div class="ex-dd-shimmer"></div>
+                      }
+                    </div>
+                    <div class="ex-dd-row" [class.ex-dd-done]="svc.summary().clusterCountryName">
+                      <span class="ex-dd-label"><span [innerHTML]="icon('arrow', 8)"></span> Country</span>
+                      @if (svc.summary().clusterCountryName) {
+                        <span class="ex-dd-value">{{ svc.summary().clusterCountryName }}</span>
+                      } @else {
+                        <div class="ex-dd-shimmer ex-dd-s2"></div>
+                      }
+                    </div>
+                    <div class="ex-dd-row" [class.ex-dd-done]="svc.summary().companyName">
+                      <span class="ex-dd-label"><span [innerHTML]="icon('arrow', 8)"></span> Company</span>
+                      @if (svc.summary().companyName) {
+                        <span class="ex-dd-value">{{ svc.summary().companyName }}</span>
+                      } @else {
+                        <div class="ex-dd-shimmer ex-dd-s3"></div>
+                      }
+                    </div>
+                    <div class="ex-dd-row" [class.ex-dd-done]="svc.summary().clientName">
+                      <span class="ex-dd-label"><span [innerHTML]="icon('arrow', 8)"></span> Client</span>
+                      @if (svc.summary().clientName) {
+                        <span class="ex-dd-value">{{ svc.summary().clientName }}</span>
+                      } @else {
+                        <div class="ex-dd-shimmer ex-dd-s4"></div>
+                      }
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Pipeline steps -->
+              <div class="ex-pipeline">
+                <div class="ex-pipe-step" [class.ex-pipe-active]="extractionTabPhase() >= 1" [class.ex-pipe-done]="extractionTabPhase() > 1">
+                  <span class="ex-pipe-num">1</span>
+                  <span class="ex-pipe-label">Parse Input</span>
+                </div>
+                <div class="ex-pipe-conn"><span></span><span></span><span></span></div>
+                <div class="ex-pipe-step" [class.ex-pipe-active]="extractionTabPhase() >= 2" [class.ex-pipe-done]="extractionTabPhase() > 2">
+                  <span class="ex-pipe-num">2</span>
+                  <span class="ex-pipe-label">Identify Fields</span>
+                </div>
+                <div class="ex-pipe-conn"><span></span><span></span><span></span></div>
+                <div class="ex-pipe-step" [class.ex-pipe-active]="extractionTabPhase() >= 3" [class.ex-pipe-done]="extractionTabPhase() > 3">
+                  <span class="ex-pipe-num">3</span>
+                  <span class="ex-pipe-label">Resolve Hierarchy</span>
+                </div>
+                <div class="ex-pipe-conn"><span></span><span></span><span></span></div>
+                <div class="ex-pipe-step" [class.ex-pipe-active]="extractionTabPhase() >= 4">
+                  <span class="ex-pipe-num">4</span>
+                  <span class="ex-pipe-label">Finalize</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        }
+
+        <!-- Loading State (Full Engine) -->
+        @if (svc.loading() && svc.loadingMode() === 'full' && !isExtractionPhase()) {
+          <div class="loading-state">
+            <div class="msg-step-icon" [innerHTML]="icon('gear')"></div>
+            <div class="loading-card">
+              <div class="lc-aurora"></div>
+              <div class="lc-bg-particles">
+                <span class="lc-bg-p"></span><span class="lc-bg-p"></span><span class="lc-bg-p"></span>
+                <span class="lc-bg-p"></span><span class="lc-bg-p"></span><span class="lc-bg-p"></span>
+              </div>
+              <div class="lc-top">
+                <div class="loading-visual">
+                  <div class="lv-ring lv-ring-outer"></div>
+                  <div class="lv-ring lv-ring-middle"></div>
+                  <div class="lv-ring lv-ring-inner"></div>
+                  <div class="lv-pulse"></div>
+                  <div class="lv-center" [innerHTML]="icon('bulb', 16)"></div>
+                  <div class="lv-particles">
+                    <span class="lv-particle"></span><span class="lv-particle"></span><span class="lv-particle"></span>
+                    <span class="lv-particle"></span><span class="lv-particle"></span><span class="lv-particle"></span>
+                  </div>
+                </div>
+                <div class="lc-info">
+                  <span class="lc-badge"><span class="lc-badge-dot"></span> TC Services Active</span>
+                  <span class="loading-label">{{ svc.loadingText() }}</span>
+                  <div class="lp-track"><div class="lp-fill"></div></div>
+                </div>
+              </div>
+              @if (svc.steps().length) {
+                <div class="lc-activity">
+                  @for (step of svc.steps(); track step.title) {
+                    <div class="lc-act-row"
+                         [class.lc-act-done]="step.state === 'completed'"
+                         [class.lc-act-active]="step.state === 'active'"
+                         [class.lc-act-pending]="step.state === 'pending'">
+                      @if (step.state === 'completed') {
+                        <span class="lc-act-icon" [innerHTML]="icon('check', 12)"></span>
+                      } @else if (step.state === 'active') {
+                        <div class="lc-act-spinner"></div>
+                      } @else {
+                        <span class="lc-act-icon" [innerHTML]="icon('circle', 12)"></span>
+                      }
+                      {{ step.title }}
+                    </div>
+                  }
+                </div>
+              }
+              <div class="lc-dataflow">
+                <div class="lc-df-node lc-df-source" [class.lc-df-active]="activeDataNode() === 'db'">
+                  <span [innerHTML]="icon('tcServices', 16)"></span> TC Services
+                </div>
+                <div class="lc-df-line">
+                  <span class="lc-df-dot"></span><span class="lc-df-dot"></span><span class="lc-df-dot"></span>
+                </div>
+                <div class="lc-df-node lc-df-ai" [class.lc-df-active]="activeDataNode() === 'ai'">
+                  @if (activeDataNode() === 'ai') { <div class="lc-df-ai-glow"></div> }
+                  <span [innerHTML]="icon('bulb', 16)"></span> AI Engine
+                </div>
+                <div class="lc-df-line">
+                  <span class="lc-df-dot"></span><span class="lc-df-dot"></span><span class="lc-df-dot"></span>
+                </div>
+                <div class="lc-df-node lc-df-result" [class.lc-df-active]="activeDataNode() === 'result'">
+                  <span [innerHTML]="icon('result', 16)"></span> Result
+                </div>
+              </div>
+              <div class="loading-steps">
+                @for (step of svc.steps(); track step.title; let i = $index) {
+                  @if (i > 0) { <div class="ls-line" [class.ls-dim]="step.state === 'pending'"></div> }
+                  <div class="ls-dot"
+                       [class.ls-done]="step.state === 'completed'"
+                       [class.ls-active]="step.state === 'active'"
+                       [class.ls-pending]="step.state === 'pending'"></div>
+                }
+              </div>
+              <div class="lc-console" [class.lc-console-docked]="svc.loading() && svc.loadingMode() === 'full'">
+                <div class="lc-console-header">
+                  <div class="lc-console-pulse"></div>
+                  <span class="lc-console-label">TC Services Console</span>
+                </div>
+                <div class="lc-console-body">
+                  @for (toast of toasters(); track toast.id) {
+                    <div class="lc-console-line"
+                         [class.lc-console-active]="!toast.leaving"
+                         [attr.data-icon]="toast.icon">
+                      <span class="lc-console-icon" [innerHTML]="icon(toast.icon, 10)"></span>
+                      <span class="lc-console-text">{{ toast.text }}</span>
+                      @if (!toast.leaving) { <div class="lc-console-spinner"></div> }
+                    </div>
+                  }
+                </div>
+              </div>
+            </div>
+          </div>
+        }
+
+        <!-- Inline Loader (lightweight, for dropdown/field fetches) -->
+        @if (svc.loading() && svc.loadingMode() === 'inline') {
+          <div class="inline-loader">
+            <div class="il-shimmer"></div>
+            <div class="il-content">
+              <div class="il-spinner"></div>
+              <div class="il-info">
+                <span class="il-text">{{ svc.loadingText() }}</span>
+                <div class="il-track"><div class="il-fill"></div></div>
+              </div>
+            </div>
+          </div>
+        }
+
+        <!-- Error Retry -->
+        @if (svc.errorRetry() && !svc.loading()) {
+          <div class="error-retry">
+            <div class="msg-step-icon er-step-icon" [innerHTML]="icon('errorCircle')"></div>
+            <div class="er-card">
+              <div class="er-body">
+                <span class="er-icon" [innerHTML]="icon('warning', 16)"></span>
+                <span class="er-text">Request failed. Check your connection and try again.</span>
+              </div>
+              <button class="er-btn" (click)="svc.retry()">
+                <span [innerHTML]="icon('undo')"></span> Retry
+              </button>
+            </div>
+          </div>
+        }
+
+        <wizard-cards />
+      </div>
+
+      @if (svc.showScrollBtn()) {
+        <button class="scroll-bottom-btn" (click)="scrollToBottom()" title="Scroll to bottom">
+          <span [innerHTML]="icon('scrollDown', 16)"></span>
+        </button>
+      }
+    </section>
+
+    <!-- Chat Input Bar -->
+    @if (!svc.projectSubmitted() && svc.aiConsent() && svc.chatEnabled() && !isTextInputField()) {
+      <footer class="chat-input-bar">
+        <input type="file" #fileInput class="file-input-hidden"
+               accept=".txt,.md,.log,.csv,.json,.text"
+               aria-label="Attach a file" title="Attach a file" (change)="onFileSelected($event)" />
+        @if (attachedFile()) {
+          <div class="attached-file-badge">
+            <span [innerHTML]="icon('clip', 12)"></span>
+            <span class="attached-file-name">{{ attachedFile()!.name }}</span>
+            <button class="attached-file-remove" (click)="clearAttachment()" title="Remove attachment">
+              <span [innerHTML]="icon('close', 10)"></span>
+            </button>
+          </div>
+        }
+        <div class="input-row">
+          <button class="attach-btn" (click)="openFilePicker()" title="Attach a file">
+            <span [innerHTML]="icon('clip', 15)"></span>
+          </button>
+          <input class="chat-input" #chatInput
+                 [value]="userInput()" (input)="onInputChange(chatInput.value)" (keydown.enter)="onSend()"
+                 [placeholder]="attachedFile() ? 'File attached — add extra details or just press Send' : svc.inputPlaceholder()"
+                 title="Type your project description here" aria-label="Chat message input" />
+          <button class="execute-btn" [disabled]="!userInput().trim() && !attachedFile()"
+                  (click)="onSend()" title="Send message" aria-label="Send message">
+            <span [innerHTML]="icon('play', 16)"></span>
+          </button>
+        </div>
+        @if (inputHint(); as hint) {
+          <div class="input-hint">{{ hint }}</div>
+        }
+      </footer>
+    }
+
+    <!-- Live Form Binding Preview — floating overlay, only during auto-fill -->
+    @if (livePreview(); as preview) {
+      <div class="live-preview-overlay">
+        <div class="live-preview">
+          <div class="lp-head">
+            <div class="lp-tab-num">{{ preview.tabNum }}</div>
+            <span class="lp-tab-name">{{ preview.tab }}</span>
+            <span class="lp-live">
+              <span class="lp-live-dot"></span>
+              Binding
+            </span>
+          </div>
+          @for (section of preview.sections; track section.title) {
+            <div class="lp-section">
+              <span class="lp-section-title">{{ section.title }}</span>
+              <div class="lp-fields">
+                @for (field of section.fields; track field.label) {
+                  <div class="lp-field" [class.lp-filled]="!!field.value">
+                    <span class="lp-label">{{ field.label }}</span>
+                    <span class="lp-val">
+                      @if (field.value) {
+                        <span class="lp-tick" [innerHTML]="icon('check', 10)"></span>
+                        {{ field.value }}
+                      } @else {
+                        <span class="lp-dash">—</span>
+                      }
+                    </span>
+                  </div>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    }
+  </main>
+</div>
